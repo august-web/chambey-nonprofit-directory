@@ -1,0 +1,131 @@
+[
+  {
+    "ein": "010548657",
+    "name": "KUEHNER BROTHERS FOUNDATION INC",
+    "inCareOfName": "% FOUNDATION SOURCE",
+    "address": {
+      "street": "FOUNDATION SOURCE 501 SILVERSIDE RD",
+      "city": "WILMINGTON",
+      "state": "DE",
+      "zip": "19809-0000",
+      "country": "US"
+    },
+    "taxExemptStatus": {
+      "subsectionCode": "03",
+      "classificationCodes": ["1000"],
+      "organizationCode": "1",
+      "statusCode": "01",
+      "foundationCode": "04",
+      "deductibilityCode": "1",
+      "rulingDate": "2003-03"
+    },
+    "revocationStatus": {
+      "onAutoRevocationList": false,
+      "revocationDate": null,
+      "revocationPostingDate": null,
+      "exemptionReinstatementDate": null
+    },
+    "category": {
+      "nteeCode": "T20"
+    },
+    "financials": {
+      "assetAmount": 622032,
+      "incomeAmount": 237334,
+      "revenueAmount": null,
+      "taxPeriod": "202512"
+    },
+    "provenance": {
+      "sourceDataset": "EO_BMF",
+      "sourceFile": "eo_de.csv",
+      "lastUpdated": "2026-07-02T12:00:00.000Z"
+    },
+    "createdAt": "2026-07-02T12:00:00.000Z",
+    "updatedAt": "2026-07-02T12:00:00.000Z"
+  },
+  {
+    "ein": "020537737",
+    "name": "NEW CALVARY BAPTIST CHURCH",
+    "inCareOfName": "% EDWARD BENN SR",
+    "address": {
+      "street": "610 S HEALD ST",
+      "city": "WILMINGTON",
+      "state": "DE",
+      "zip": "19801-5636",
+      "country": "US"
+    },
+    "taxExemptStatus": {
+      "subsectionCode": "03",
+      "classificationCodes": ["7000"],
+      "organizationCode": "1",
+      "statusCode": "01",
+      "foundationCode": "10",
+      "deductibilityCode": "1",
+      "rulingDate": "2005-05"
+    },
+    "revocationStatus": {
+      "onAutoRevocationList": false,
+      "revocationDate": null,
+      "revocationPostingDate": null,
+      "exemptionReinstatementDate": null
+    },
+    "category": {
+      "nteeCode": "X21"
+    },
+    "financials": {
+      "assetAmount": null,
+      "incomeAmount": null,
+      "revenueAmount": null,
+      "taxPeriod": null
+    },
+    "provenance": {
+      "sourceDataset": "EO_BMF",
+      "sourceFile": "eo_de.csv",
+      "lastUpdated": "2026-07-02T12:00:00.000Z"
+    },
+    "createdAt": "2026-07-02T12:00:00.000Z",
+    "updatedAt": "2026-07-02T12:00:00.000Z"
+  },
+  {
+    "ein": "010561836",
+    "name": "KREATIVE MINDS INCORPORATED",
+    "inCareOfName": null,
+    "address": {
+      "street": "1432 S HANCOCK AVE",
+      "city": "DOVER",
+      "state": "DE",
+      "zip": "19901-4058",
+      "country": "US"
+    },
+    "taxExemptStatus": {
+      "subsectionCode": "03",
+      "classificationCodes": ["1000"],
+      "organizationCode": "1",
+      "statusCode": "01",
+      "foundationCode": "15",
+      "deductibilityCode": "1",
+      "rulingDate": "2026-05"
+    },
+    "revocationStatus": {
+      "onAutoRevocationList": true,
+      "revocationDate": "2023-05-15",
+      "revocationPostingDate": "2023-08-14",
+      "exemptionReinstatementDate": null
+    },
+    "category": {
+      "nteeCode": "A01"
+    },
+    "financials": {
+      "assetAmount": 289,
+      "incomeAmount": 0,
+      "revenueAmount": 0,
+      "taxPeriod": "201912"
+    },
+    "provenance": {
+      "sourceDataset": "EO_BMF",
+      "sourceFile": "eo_de.csv",
+      "lastUpdated": "2026-07-02T12:00:00.000Z"
+    },
+    "createdAt": "2026-07-02T12:00:00.000Z",
+    "updatedAt": "2026-07-02T12:00:00.000Z"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "EIN": "010561836",
+    "LegalName": "KREATIVE MINDS INCORPORATED",
+    "DoingBusinessAsName": "",
+    "Address": "1432 S HANCOCK AVE",
+    "City": "DOVER",
+    "State": "DE",
+    "ZIPCode": "19901-4058",
+    "Country": "US",
+    "ExemptionType": "3",
+    "RevocationDate": "15-MAY-2023",
+    "RevocationPostingDate": "14-AUG-2023",
+    "ExemptionReinstatementDate": "",
+    "_sourceFile": "data-download-revocation.txt",
+    "_ingestedAt": "2026-07-02T12:00:00.000Z"
+  }
+]

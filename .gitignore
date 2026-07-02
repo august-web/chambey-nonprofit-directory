@@ -1,0 +1,7 @@
+node_modules/
+data/raw/*.csv
+data/raw/*.zip
+data/raw/*.txt
+data/logs/
+.env
+dist/

@@ -1,0 +1,26 @@
+{
+  "name": "chambey-nonprofit-directory",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Phase 0 prototype: IRS nonprofit data ingestion pipeline + search API",
+  "scripts": {
+    "ingest": "tsx src/cli.ts ingest",
+    "serve": "tsx src/cli.ts serve",
+    "build": "tsc",
+    "start": "node dist/cli.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.18",
+    "csv-parse": "^5.6.0",
+    "express": "^4.21.0",
+    "mongodb": "^6.10.0"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.8",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
