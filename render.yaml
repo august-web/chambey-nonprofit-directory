@@ -1,0 +1,29 @@
+services:
+  # MongoDB — private Docker service with persistent disk
+  - type: pserv
+    name: mongodb
+    runtime: image
+    image:
+      url: mongo:8
+    disk:
+      name: mongodb-data
+      mountPath: /data/db
+      sizeGB: 2
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb://localhost:27017
+
+  # Express API — public web service
+  - type: web
+    name: api
+    runtime: node
+    buildCommand: npm install && npx tsc
+    startCommand: node dist/cli.js serve
+    healthCheckPath: /stats
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb://mongodb:27017
+      - key: DB_NAME
+        value: nonprofit_directory
+      - key: PORT
+        value: "10000"

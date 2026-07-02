@@ -1,0 +1,14 @@
+{
+  "buildCommand": null,
+  "outputDirectory": "public",
+  "rewrites": [
+    {
+      "source": "/stats",
+      "destination": "https://API_RENDER_URL/stats"
+    },
+    {
+      "source": "/organizations/:path*",
+      "destination": "https://API_RENDER_URL/organizations/:path*"
+    }
+  ]
+}
