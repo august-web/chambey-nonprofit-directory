@@ -14,6 +14,7 @@ export async function runLoadSubset(): Promise<void> {
   const orgs = db.collection("organizations");
 
   await orgs.createIndex({ ein: 1 }, { unique: true });
+  await createIndexes(db);
 
   const gunzip = createGunzip();
   const stream = createReadStream(EXPORT_FILE).pipe(gunzip);
@@ -24,8 +25,17 @@ export async function runLoadSubset(): Promise<void> {
 
   const flush = async () => {
     if (batch.length === 0) return;
-    await orgs.insertMany(batch, { ordered: false });
-    count += batch.length;
+    try {
+      await orgs.insertMany(batch, { ordered: false });
+      count += batch.length;
+    } catch (err: unknown) {
+      const code = (err as { code?: number }).code;
+      if (code === 11000) {
+        count += batch.length;
+      } else {
+        console.error("  insert error:", err);
+      }
+    }
     batch = [];
     console.log(`  ${count.toLocaleString()} loaded...`);
   };
@@ -54,9 +64,6 @@ export async function runLoadSubset(): Promise<void> {
     batch.push(doc);
   }
   await flush();
-
-  console.log(`\nCreating indexes...`);
-  await createIndexes(db);
 
   console.log(`\nDone. ${count.toLocaleString()} organizations loaded.`);
 }
