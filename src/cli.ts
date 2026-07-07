@@ -5,7 +5,7 @@ import { DEFAULT_STATES } from "./config.js";
 
 function parseArgs(): { command: string; states: string[] } {
   const args = process.argv.slice(2);
-  const command = args[0] ?? "help";
+  const command = args[0] ?? "serve";
 
   let states = DEFAULT_STATES;
   for (const arg of args) {
