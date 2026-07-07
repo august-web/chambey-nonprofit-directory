@@ -2,7 +2,7 @@ services:
   - type: web
     name: api
     runtime: node
-    repo: https://github.com/august-web/chambey-nonprofit-directory
+    repo: https://github.com/Chambey-Organization/chambey-nonprofit-directory
     buildCommand: npm install && npx tsc
     startCommand: node dist/cli.js serve
     healthCheckPath: /stats

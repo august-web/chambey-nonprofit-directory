@@ -9,7 +9,7 @@
     "load-subset": "tsx src/cli.ts load-subset",
     "serve": "tsx src/cli.ts serve",
     "build": "tsc",
-    "start": "node dist/cli.js"
+    "start": "node dist/cli.js serve"
   },
   "dependencies": {
     "adm-zip": "^0.5.18",
