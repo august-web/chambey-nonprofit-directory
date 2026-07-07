@@ -99,20 +99,29 @@ export async function loadCanonical(
 
   if (organizations.length === 0) return log;
 
-  const bulkOps = organizations.map((org) => {
-    const { createdAt: _ignore, ...setFields } = org;
-    return {
-      updateOne: {
-        filter: { ein: org.ein },
-        update: { $set: setFields, $setOnInsert: { createdAt: new Date() } },
-        upsert: true,
-      },
-    };
-  });
+  const BATCH_SIZE = 2000;
+  let inserted = 0;
+  let updated = 0;
 
-  const result = await orgs.bulkWrite(bulkOps, { ordered: false });
-  log.recordsInserted = result.upsertedCount;
-  log.recordsUpdated = result.modifiedCount;
+  for (let i = 0; i < organizations.length; i += BATCH_SIZE) {
+    const batch = organizations.slice(i, i + BATCH_SIZE);
+    const bulkOps = batch.map((org) => {
+      const { createdAt: _ignore, ...setFields } = org;
+      return {
+        updateOne: {
+          filter: { ein: org.ein },
+          update: { $set: setFields, $setOnInsert: { createdAt: new Date() } },
+          upsert: true,
+        },
+      };
+    });
+    const result = await orgs.bulkWrite(bulkOps, { ordered: false });
+    inserted += result.upsertedCount;
+    updated += result.modifiedCount;
+  }
+
+  log.recordsInserted = inserted;
+  log.recordsUpdated = updated;
 
   return log;
 }

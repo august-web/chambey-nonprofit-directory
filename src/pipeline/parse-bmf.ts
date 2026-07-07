@@ -38,7 +38,26 @@ export async function parseAndLoadBmf(
   const now = new Date().toISOString();
   const sourceFile = `eo_${state.toLowerCase()}.csv`;
 
+  const BATCH_SIZE = 2000;
   let batch: RawBmfRecord[] = [];
+  let inserted = 0;
+  let updated = 0;
+
+  async function flushBatch() {
+    if (batch.length === 0) return;
+    const bulkOps = batch.map((doc) => ({
+      updateOne: {
+        filter: { EIN: doc.EIN, _sourceFile: doc._sourceFile },
+        update: { $set: doc },
+        upsert: true,
+      },
+    }));
+    const result = await raw.bulkWrite(bulkOps, { ordered: false });
+    inserted += result.upsertedCount;
+    updated += result.modifiedCount;
+    batch = [];
+  }
+
   for (const row of records) {
     if (!row.EIN || row.EIN.trim().length === 0) {
       log.recordsSkipped++;
@@ -78,21 +97,14 @@ export async function parseAndLoadBmf(
       _ingestedAt: now,
     };
     batch.push(doc);
+    if (batch.length >= BATCH_SIZE) {
+      await flushBatch();
+    }
   }
+  await flushBatch();
 
-  if (batch.length > 0) {
-    const bulkOps = batch.map((doc) => ({
-      updateOne: {
-        filter: { EIN: doc.EIN, _sourceFile: doc._sourceFile },
-        update: { $set: doc },
-        upsert: true,
-      },
-    }));
-    const result = await raw.bulkWrite(bulkOps, { ordered: false });
-    log.recordsInserted = result.upsertedCount;
-    log.recordsUpdated = result.modifiedCount;
-    log.duplicatesFound = log.recordsRead - batch.length;
-  }
+  log.recordsInserted = inserted;
+  log.recordsUpdated = updated;
 
   return log;
 }
