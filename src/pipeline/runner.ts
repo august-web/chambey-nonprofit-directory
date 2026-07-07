@@ -86,6 +86,14 @@ export async function runIngest(states: string[]): Promise<void> {
     const joined = await joinRevocationData(db);
     console.log(`  Organizations flagged with revocation data: ${joined}`);
 
+    // Stage 5: Drop raw_bmf_records to free space (no longer needed after canonical + revocation join)
+    try {
+      await db.collection("raw_bmf_records").drop();
+      console.log("  Dropped raw_bmf_records collection (intermediate data no longer needed)");
+    } catch {
+      // Already dropped or doesn't exist
+    }
+
     // Print summary
     printSummary(log);
 
