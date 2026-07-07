@@ -69,6 +69,11 @@ export async function runIngest(states: string[]): Promise<void> {
         printLogEntry(canonicalLog);
         log.entries.push(canonicalLog);
         accumulateLog(log.total, canonicalLog);
+
+        // Drop raw BMF records for this state to keep storage under free-tier limit
+        const sourceFile = `eo_${state.toLowerCase()}.csv`;
+        const deleteResult = await rawBmf.deleteMany({ _sourceFile: sourceFile });
+        console.log(`  [cleanup] Deleted ${deleteResult.deletedCount} raw records for ${sourceFile}`);
       } catch (err) {
         console.error(`  [${state}] FAILED: ${err}`);
       }
