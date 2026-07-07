@@ -6,6 +6,7 @@
   "description": "Phase 0 prototype: IRS nonprofit data ingestion pipeline + search API",
   "scripts": {
     "ingest": "tsx src/cli.ts ingest",
+    "load-subset": "tsx src/cli.ts load-subset",
     "serve": "tsx src/cli.ts serve",
     "build": "tsc",
     "start": "node dist/cli.js"

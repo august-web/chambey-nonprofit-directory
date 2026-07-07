@@ -1,4 +1,5 @@
 import { runIngest } from "./pipeline/runner.js";
+import { runLoadSubset } from "./pipeline/load-subset.js";
 import { startServer } from "./api/routes.js";
 import { DEFAULT_STATES } from "./config.js";
 
@@ -29,6 +30,9 @@ async function main(): Promise<void> {
     case "ingest":
       await runIngest(states);
       break;
+    case "load-subset":
+      await runLoadSubset();
+      break;
     case "serve":
       await startServer();
       break;
@@ -37,6 +41,7 @@ async function main(): Promise<void> {
 Usage:
   npm run ingest [-- --states=DE,VT]   Run the ingestion pipeline
   npm run ingest -- --states=ALL       Ingest all states
+  npm run load-subset                  Load data/export/ca-subset.json.gz into MongoDB
   npm run serve                        Start the search API server
       `);
   }

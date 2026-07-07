@@ -4,11 +4,11 @@
   "rewrites": [
     {
       "source": "/stats",
-      "destination": "https://API_RENDER_URL/stats"
+      "destination": "https://chambey-nonprofit-directory.onrender.com/stats"
     },
     {
       "source": "/organizations/:path*",
-      "destination": "https://API_RENDER_URL/organizations/:path*"
+      "destination": "https://chambey-nonprofit-directory.onrender.com/organizations/:path*"
     }
   ]
 }
