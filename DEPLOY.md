@@ -70,3 +70,6 @@ Verify with `GET /stats` on Render → `totalOrganizations` > 0.
   `scripts/export-subset.js` is tracked. To regenerate the export from a populated local
   Mongo: `npm run tsx scripts/export-subset.js` (adjust `STATES` as needed).
 - Never commit `MONGODB_URI`. It lives only in Render's env.
+- Vercel requires the git commit author email to match a GitHub account linked to Vercel.
+  Use the verified GitHub email (e.g. `elon.dev18@gmail.com`) for commits that trigger deploys:
+  `git config user.email "elon.dev18@gmail.com"`. Otherwise Vercel blocks the deployment.
