@@ -1,7 +1,8 @@
 import * as fs from "node:fs";
 import { parse } from "csv-parse/sync";
 import { Db } from "mongodb";
-import { RawBmfRecord, IngestLogEntry } from "../types.js";
+import { Organization, IngestLogEntry } from "../types.js";
+import { normalizeBmfRecord, loadCanonical } from "./normalize.js";
 
 const BMF_COLUMNS = [
   "EIN", "NAME", "ICO", "STREET", "CITY", "STATE", "ZIP", "GROUP",
@@ -16,7 +17,6 @@ export async function parseAndLoadBmf(
   filePath: string,
   state: string
 ): Promise<IngestLogEntry> {
-  const raw = db.collection<RawBmfRecord>("raw_bmf_records");
   const content = fs.readFileSync(filePath, "utf-8");
   const records: Record<string, string>[] = parse(content, {
     columns: BMF_COLUMNS,
@@ -35,36 +35,16 @@ export async function parseAndLoadBmf(
     duplicatesFound: 0,
   };
 
-  const now = new Date().toISOString();
   const sourceFile = `eo_${state.toLowerCase()}.csv`;
 
-  const BATCH_SIZE = 2000;
-  let batch: RawBmfRecord[] = [];
-  let inserted = 0;
-  let updated = 0;
-
-  async function flushBatch() {
-    if (batch.length === 0) return;
-    const bulkOps = batch.map((doc) => ({
-      updateOne: {
-        filter: { EIN: doc.EIN, _sourceFile: doc._sourceFile },
-        update: { $set: doc },
-        upsert: true,
-      },
-    }));
-    const result = await raw.bulkWrite(bulkOps, { ordered: false });
-    inserted += result.upsertedCount;
-    updated += result.modifiedCount;
-    batch = [];
-  }
-
+  const organizations: Organization[] = [];
   for (const row of records) {
     if (!row.EIN || row.EIN.trim().length === 0) {
       log.recordsSkipped++;
       continue;
     }
 
-    const doc: RawBmfRecord = {
+    const raw = {
       EIN: row.EIN.trim(),
       NAME: row.NAME ?? "",
       ICO: row.ICO ?? "",
@@ -93,18 +73,15 @@ export async function parseAndLoadBmf(
       REVENUE_AMT: row.REVENUE_AMT ?? "",
       NTEE_CD: row.NTEE_CD ?? "",
       SORT_NAME: row.SORT_NAME ?? "",
-      _sourceFile: sourceFile,
-      _ingestedAt: now,
     };
-    batch.push(doc);
-    if (batch.length >= BATCH_SIZE) {
-      await flushBatch();
-    }
-  }
-  await flushBatch();
 
-  log.recordsInserted = inserted;
-  log.recordsUpdated = updated;
+    const org = normalizeBmfRecord(raw as any, sourceFile);
+    organizations.push(org);
+  }
+
+  const canonicalLog = await loadCanonical(db, organizations);
+  log.recordsInserted = canonicalLog.recordsInserted;
+  log.recordsUpdated = canonicalLog.recordsUpdated;
 
   return log;
 }

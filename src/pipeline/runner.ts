@@ -5,14 +5,13 @@ import { getDb, closeConnection } from "../db/connection.js";
 import { createIndexes } from "../db/indexes.js";
 import { downloadBmfFile, ensureRevocationFile } from "./download.js";
 import { parseAndLoadBmf } from "./parse-bmf.js";
-import { normalizeBmfRecord, loadCanonical } from "./normalize.js";
 import { joinRevocationData } from "./join.js";
 import {
   DEFAULT_STATES,
   ALL_STATES,
   LOG_DIR,
 } from "../config.js";
-import { RawBmfRecord, IngestLog, IngestLogEntry } from "../types.js";
+import { IngestLog, IngestLogEntry } from "../types.js";
 
 export async function runIngest(states: string[]): Promise<void> {
   const useStates =
@@ -39,14 +38,11 @@ export async function runIngest(states: string[]): Promise<void> {
   };
 
   try {
-    // Stage 0: Ensure indexes for fast upsert lookups
+    // Stage 0: Ensure index for fast upsert lookups
     const orgs = db.collection("organizations");
-    const rawBmf = db.collection("raw_bmf_records");
     await orgs.createIndex({ ein: 1 }, { unique: true });
-    await rawBmf.createIndex({ _sourceFile: 1 });
-    await rawBmf.createIndex({ EIN: 1, _sourceFile: 1 });
 
-    // Stage 1: Download & load BMF files
+    // Stage 1: Download & load BMF files (parses CSV → normalizes → upserts to organizations)
     for (const state of useStates) {
       try {
         const filePath = await downloadBmfFile(state);
@@ -54,26 +50,6 @@ export async function runIngest(states: string[]): Promise<void> {
         printLogEntry(bmfLog);
         log.entries.push(bmfLog);
         accumulateLog(log.total, bmfLog);
-
-        // Normalize and load canonical
-        const raw = db.collection<RawBmfRecord>("raw_bmf_records");
-        const rawRecords = await raw
-          .find({ _sourceFile: `eo_${state.toLowerCase()}.csv` })
-          .toArray();
-
-        const canonical = rawRecords.map((r) =>
-          normalizeBmfRecord(r, `eo_${state.toLowerCase()}.csv`)
-        );
-
-        const canonicalLog = await loadCanonical(db, canonical);
-        printLogEntry(canonicalLog);
-        log.entries.push(canonicalLog);
-        accumulateLog(log.total, canonicalLog);
-
-        // Drop raw BMF records for this state to keep storage under free-tier limit
-        const sourceFile = `eo_${state.toLowerCase()}.csv`;
-        const deleteResult = await rawBmf.deleteMany({ _sourceFile: sourceFile });
-        console.log(`  [cleanup] Deleted ${deleteResult.deletedCount} raw records for ${sourceFile}`);
       } catch (err) {
         console.error(`  [${state}] FAILED: ${err}`);
       }
@@ -90,14 +66,6 @@ export async function runIngest(states: string[]): Promise<void> {
     console.log(`\n--- Joining revocation data ---`);
     const joined = await joinRevocationData(db);
     console.log(`  Organizations flagged with revocation data: ${joined}`);
-
-    // Stage 5: Drop raw_bmf_records to free space (no longer needed after canonical + revocation join)
-    try {
-      await db.collection("raw_bmf_records").drop();
-      console.log("  Dropped raw_bmf_records collection (intermediate data no longer needed)");
-    } catch {
-      // Already dropped or doesn't exist
-    }
 
     // Print summary
     printSummary(log);
